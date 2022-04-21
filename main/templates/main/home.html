@@ -1,0 +1,58 @@
+{% extends 'main/base.html' %}
+{% block title %}Home Page{% endblock%}
+{% block content %}
+<table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">ID Number</th>
+        <th scope="col">TC.</th>
+        <th scope="col">Name</th>
+        <th scope="col">Surname</th>
+        <th scope="col">Phone Number</th>
+        <th scope="col">City</th>
+        <th scope="col">District</th>
+        <th scope="col">Created At</th>
+        <th scope="col">User</th>
+        <th scope="col">Manage Customer</th>
+        <th scope="col">Manager User</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers%}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{customer.id}}</td>
+            <td>{{customer.tc}}</td>
+            <td>{{customer.name}}</td>
+            <td>{{customer.surname}}</td>
+            <td>{{customer.phoneNumber}}</td>
+            <td>{{customer.city}}</td>
+            <td>{{customer.district}}</td>
+            <td>{{customer.created_at}}</td>
+            <td>{{customer.manager.username}}</td>
+            <td>
+                {% if user == customer.manager or perms.main.delete_customer or perms.main.update_customer %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning" name="customer-update" value="{{customer.id}}">Update</button>                    
+                        <br><br>
+                        <button type="submit" class="btn btn-danger" name="customer-id" value="{{customer.id}}">Delete</button>  
+                    </form>
+                {% endif %}
+            </td>
+            <td>
+                {% if user.is_staff %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" name="user-id" value="{{customer.manager.id}}">Ban User</button>  
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <p> No customer has been registered yet!</p>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
